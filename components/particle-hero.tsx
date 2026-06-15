@@ -240,10 +240,9 @@ export function ParticleHero() {
           }}
           style={{
             position: "absolute",
-            left: 0,
-            right: 0,
+            left: "50%",
+            marginLeft: "-1.5em",
             top: "2em",
-            margin: "0 auto",
             width: "3em", /* Slightly larger hit area */
             height: "3em", /* Slightly larger hit area */
             borderRadius: "50%",
@@ -280,9 +279,8 @@ export function ParticleHero() {
               style={{
                 borderRadius: "0 0 50% 50%",
                 position: "absolute",
-                left: 0,
-                right: 0,
-                margin: "0 auto",
+                left: "50%",
+                marginLeft: "-15em",
                 top: "1em",
                 width: "30em",
                 height: "max(42em, 86vh)",
