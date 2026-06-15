@@ -283,7 +283,7 @@ export function ParticleHero() {
                 left: 0,
                 right: 0,
                 margin: "0 auto",
-                top: "3em",
+                top: "1em",
                 width: "30em",
                 height: "max(42em, 86vh)",
                 backgroundImage:
