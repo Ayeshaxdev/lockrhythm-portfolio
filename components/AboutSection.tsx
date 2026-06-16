@@ -87,7 +87,7 @@ function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
           position: "relative",
           background: "linear-gradient(145deg, rgba(15,20,30,0.6) 0%, rgba(5,8,12,0.8) 100%)",
           border: "1px solid rgba(255, 255, 255, 0.05)",
-          padding: "40px 32px",
+          padding: "clamp(24px, 4vw, 40px) clamp(20px, 3vw, 32px)",
           borderRadius: "16px",
           overflow: "hidden",
           cursor: "default",
@@ -115,8 +115,8 @@ function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: "56px",
-              height: "56px",
+              width: "clamp(48px, 6vw, 56px)",
+              height: "clamp(48px, 6vw, 56px)",
               background: "rgba(58, 155, 213, 0.05)",
               border: "1px solid rgba(58, 155, 213, 0.15)",
               borderRadius: "12px",
@@ -134,7 +134,7 @@ function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
             style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 700,
-              fontSize: "24px",
+              fontSize: "clamp(20px, 2.5vw, 24px)",
               color: "#E8EDF5",
               letterSpacing: "-0.03em",
               margin: "0 0 16px",
@@ -145,7 +145,7 @@ function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
           <p
             style={{
               fontFamily: "'Inter', sans-serif",
-              fontSize: "15px",
+              fontSize: "clamp(14px, 1.5vw, 15px)",
               color: "#8BAFC8",
               lineHeight: 1.7,
               margin: 0,
@@ -253,7 +253,7 @@ export default function AboutSection() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        padding: "80px 64px",
+        padding: "clamp(60px, 8vh, 80px) clamp(24px, 5vw, 64px)",
         position: "relative",
         overflow: "hidden",
       }}
@@ -340,8 +340,8 @@ export default function AboutSection() {
           ref={pillarsRef}
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "24px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(clamp(240px, 30vw, 280px), 1fr))",
+            gap: "clamp(16px, 3vw, 24px)",
             marginTop: "24px",
           }}
         >
