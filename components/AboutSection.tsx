@@ -65,6 +65,117 @@ const pillars = [
   },
 ];
 
+function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    cardRef.current.style.setProperty("--mouse-x", `${x}px`);
+    cardRef.current.style.setProperty("--mouse-y", `${y}px`);
+  };
+
+  return (
+    <div data-pillar style={{ opacity: 0, transform: "translateY(24px)" }}>
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        className="pillar-card"
+        style={{
+          position: "relative",
+          background: "linear-gradient(145deg, rgba(15,20,30,0.6) 0%, rgba(5,8,12,0.8) 100%)",
+          border: "1px solid rgba(255, 255, 255, 0.05)",
+          padding: "40px 32px",
+          borderRadius: "16px",
+          overflow: "hidden",
+          cursor: "default",
+          transition: "all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)",
+          boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)",
+          height: "100%",
+        }}
+      >
+        <div 
+          className="spotlight"
+          style={{
+            position: "absolute",
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: "radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(58, 155, 213, 0.15), transparent 40%)",
+            zIndex: 0,
+            pointerEvents: "none",
+            opacity: 0,
+            transition: "opacity 0.5s",
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div
+            className="pillar-icon-wrap"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "56px",
+              height: "56px",
+              background: "rgba(58, 155, 213, 0.05)",
+              border: "1px solid rgba(58, 155, 213, 0.15)",
+              borderRadius: "12px",
+              fontFamily: "monospace",
+              fontSize: "26px",
+              color: "#3A9BD5",
+              marginBottom: "28px",
+              lineHeight: 1,
+              transition: "all 0.4s ease",
+            }}
+          >
+            {pillar.glyph}
+          </div>
+          <h3
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 700,
+              fontSize: "24px",
+              color: "#E8EDF5",
+              letterSpacing: "-0.03em",
+              margin: "0 0 16px",
+            }}
+          >
+            {pillar.name}
+          </h3>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "15px",
+              color: "#8BAFC8",
+              lineHeight: 1.7,
+              margin: 0,
+              opacity: 0.8,
+            }}
+          >
+            {pillar.desc}
+          </p>
+        </div>
+      </div>
+      <style>{`
+        .pillar-card:hover {
+          transform: translateY(-8px) scale(1.02);
+          border-color: rgba(58, 155, 213, 0.3) !important;
+          box-shadow: 0 20px 40px -10px rgba(58, 155, 213, 0.2);
+        }
+        .pillar-card:hover .spotlight {
+          opacity: 1 !important;
+        }
+        .pillar-card:hover .pillar-icon-wrap {
+          background: rgba(58, 155, 213, 0.15) !important;
+          border-color: rgba(58, 155, 213, 0.4) !important;
+          box-shadow: 0 0 20px rgba(58, 155, 213, 0.3) !important;
+          transform: scale(1.1) rotate(5deg);
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
@@ -229,60 +340,13 @@ export default function AboutSection() {
           ref={pillarsRef}
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "1px",
-            background: "rgba(255,255,255,0.05)",
-            borderRadius: "4px",
-            overflow: "hidden",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "24px",
+            marginTop: "24px",
           }}
         >
           {pillars.map((p) => (
-            <div
-              key={p.name}
-              data-pillar
-              style={{
-                background: "#040408",
-                padding: "36px 32px",
-                opacity: 0,
-                transform: "translateY(24px)",
-              }}
-            >
-              <span
-                style={{
-                  display: "block",
-                  fontFamily: "monospace",
-                  fontSize: "22px",
-                  color: "#3A9BD5",
-                  marginBottom: "16px",
-                  lineHeight: 1,
-                }}
-              >
-                {p.glyph}
-              </span>
-              <p
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 600,
-                  fontSize: "18px",
-                  color: "#E8EDF5",
-                  letterSpacing: "-0.02em",
-                  margin: "0 0 10px",
-                }}
-              >
-                {p.name}
-              </p>
-              <p
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "13px",
-                  color: "#3A4A5A",
-                  lineHeight: 1.7,
-                  margin: 0,
-                }}
-              >
-                {p.desc}
-              </p>
-            </div>
+            <PillarCard key={p.name} pillar={p} />
           ))}
         </div>
       </div>
