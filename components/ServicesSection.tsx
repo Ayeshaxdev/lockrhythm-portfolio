@@ -114,7 +114,7 @@ export default function ServicesSection() {
           whiteSpace: "nowrap",
           fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 900,
-          fontSize: "13vw",
+          fontSize: "14.5vw",
           letterSpacing: "-0.02em",
           color: "transparent",
           WebkitTextStroke: "1px rgba(255,255,255,0.08)",
