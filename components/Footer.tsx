@@ -35,8 +35,8 @@ export function Footer() {
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center">
           
-          <div className="mb-10 rounded-full border border-[rgba(255,255,255,0.1)] hover:border-[#3A9BD5] transition-colors duration-500 overflow-hidden w-40 h-40 flex items-center justify-center p-6">
-            <img src="/transparent-image.png" alt="LockRhythm Logo" className="w-full h-full object-contain" />
+          <div className="mb-10 rounded-full border border-[rgba(255,255,255,0.1)] hover:border-[#3A9BD5] transition-colors duration-500 overflow-hidden w-48 h-48 flex items-center justify-center p-0">
+            <img src="/transparent-image.png" alt="LockRhythm Logo" className="w-full h-full object-contain scale-[1.2]" />
           </div>
 
           <nav className="mb-10 flex flex-wrap justify-center gap-8">

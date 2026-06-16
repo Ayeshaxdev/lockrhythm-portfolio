@@ -32,7 +32,7 @@ export default function Navbar() {
         justifyContent: "space-between",
       }}>
         {/* Brand */}
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "12px", position: "relative" }}
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "2px", position: "relative", marginLeft: "-10px" }}
           onClick={() => setOpen(false)}>
           <div style={{
             width: "72px", 
