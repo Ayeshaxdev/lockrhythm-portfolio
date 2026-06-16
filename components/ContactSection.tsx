@@ -1,209 +1,101 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// ── Inline SVG icons (no external libs) ──────────────────────────────────────
-const IconInstagram = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-    <circle cx="12" cy="12" r="4"/>
-    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
-  </svg>
-);
-
-const IconLinkedIn = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-    <rect x="2" y="9" width="4" height="12"/>
-    <circle cx="4" cy="4" r="2"/>
-  </svg>
-);
-
-const IconX = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.727-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-  </svg>
-);
-
-// ── Social links data ─────────────────────────────────────────────────────────
-const SOCIALS = [
-  { label: "Instagram", href: "https://www.instagram.com/lockrhythm/",         Icon: IconInstagram },
-  { label: "LinkedIn",  href: "https://www.linkedin.com/company/lockrythm",    Icon: IconLinkedIn  },
-  { label: "X",         href: "https://x.com/lockrythm",                       Icon: IconX         },
-];
-
-// ── Input field component ─────────────────────────────────────────────────────
-function TerminalInput({
-  label,
-  type = "text",
-  placeholder,
-  isTextarea = false,
-  value,
-  onChange,
-}: {
-  label: string;
-  type?: string;
-  placeholder: string;
-  isTextarea?: boolean;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  const [focused, setFocused] = useState(false);
-
-  const sharedStyle: React.CSSProperties = {
-    width: "100%",
-    background: "transparent",
-    border: "none",
-    borderBottom: `1px solid ${focused ? "#3A9BD5" : "#1B2A3A"}`,
-    boxShadow: focused ? "0 2px 12px rgba(58,155,213,0.18)" : "none",
-    outline: "none",
-    color: "#E8EDF5",
-    fontFamily: "'Inter', sans-serif",
-    fontSize: "14px",
-    padding: "14px 0",
-    resize: "none" as const,
-    transition: "border-color 0.3s ease, box-shadow 0.3s ease",
-    caretColor: "#3A9BD5",
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-      <label
-        style={{
-          fontFamily: "monospace",
-          fontSize: "9px",
-          letterSpacing: "0.22em",
-          color: focused ? "#3A9BD5" : "#3A4A5A",
-          transition: "color 0.3s",
-        }}
-      >
-        {label}
-      </label>
-
-      {isTextarea ? (
-        <textarea
-          rows={4}
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          style={{
-            ...sharedStyle,
-            fontFamily: "monospace",
-            fontSize: "12px",
-            letterSpacing: "0.1em",
-            color: "#9BAAB8",
-          }}
-        />
-      ) : (
-        <input
-          type={type}
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          style={{
-            ...sharedStyle,
-            fontFamily: "monospace",
-            fontSize: "12px",
-            letterSpacing: "0.1em",
-            color: "#9BAAB8",
-          }}
-        />
-      )}
-
-      <style>{`
-        input::placeholder, textarea::placeholder {
-          color: #2A3A4A;
-          font-family: monospace;
-          letter-spacing: 0.15em;
-          font-size: 11px;
-        }
-      `}</style>
-    </div>
-  );
-}
-
-// ── Main component ────────────────────────────────────────────────────────────
 export default function ContactSection() {
-  const sectionRef  = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLDivElement>(null);
-  const subtextRef  = useRef<HTMLParagraphElement>(null);
-  const formRef     = useRef<HTMLFormElement>(null);
-  const footerRef   = useRef<HTMLDivElement>(null);
-
-  const [name,    setName]    = useState("");
-  const [email,   setEmail]   = useState("");
-  const [scope,   setScope]   = useState("");
+  const sectionRef = useRef<HTMLElement>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent,    setSent]    = useState(false);
-  const [btnHover, setBtnHover] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  // ── GSAP scroll reveal ────────────────────────────────────────────────────
+  // ── GSAP entrance ──
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+    const section = sectionRef.current;
+    if (!section) return;
 
-    const section  = sectionRef.current;
-    const headline = headlineRef.current;
-    const subtext  = subtextRef.current;
-    const form     = formRef.current;
-    const footer   = footerRef.current;
+    const ctx = gsap.context(() => {
+      // Section number + rule
+      gsap.fromTo(
+        ".ct-topline",
+        { width: 0, opacity: 0 },
+        {
+          width: "100%",
+          opacity: 1,
+          duration: 1.2,
+          ease: "power3.inOut",
+          scrollTrigger: { trigger: section, start: "top 80%" },
+        }
+      );
 
-    if (!section || !headline || !subtext || !form || !footer) return;
+      gsap.fromTo(
+        ".ct-label",
+        { opacity: 0, x: -20 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.6,
+          ease: "power3.out",
+          scrollTrigger: { trigger: section, start: "top 78%" },
+        }
+      );
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top 75%",
-        toggleActions: "play none none reverse",
-      },
-    });
+      // Headline words
+      gsap.fromTo(
+        ".ct-word",
+        { y: 120, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.9,
+          stagger: 0.08,
+          ease: "power4.out",
+          scrollTrigger: { trigger: section, start: "top 72%" },
+        }
+      );
 
-    // Lines inside headline stagger
-    const lines = headline.querySelectorAll(".lr-line");
-    tl.fromTo(
-      lines,
-      { y: 60, opacity: 0, skewY: 2 },
-      { y: 0,  opacity: 1, skewY: 0, duration: 0.8, stagger: 0.12, ease: "power4.out" }
-    );
+      // Right column content
+      gsap.fromTo(
+        ".ct-right-item",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "power3.out",
+          scrollTrigger: { trigger: section, start: "top 65%" },
+        }
+      );
 
-    tl.fromTo(
-      subtext,
-      { y: 20, opacity: 0 },
-      { y: 0,  opacity: 1, duration: 0.6, ease: "power3.out" },
-      "-=0.4"
-    );
+      // Bottom row
+      gsap.fromTo(
+        ".ct-bottom-item",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: section, start: "top 50%" },
+        }
+      );
+    }, section);
 
-    // Form fields stagger
-    const fields = form.querySelectorAll(".lr-field");
-    tl.fromTo(
-      fields,
-      { y: 24, opacity: 0 },
-      { y: 0,  opacity: 1, duration: 0.55, stagger: 0.1, ease: "power3.out" },
-      "-=0.3"
-    );
-
-    tl.fromTo(
-      footer,
-      { y: 16, opacity: 0 },
-      { y: 0,  opacity: 1, duration: 0.5, ease: "power2.out" },
-      "-=0.2"
-    );
-
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+    return () => ctx.revert();
   }, []);
 
-  // ── Form submit ───────────────────────────────────────────────────────────
+  // ── Submit ──
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email) return;
-
+    if (!name || !email || !message) return;
     setLoading(true);
-    // Simulate async send (replace with your real API call)
-    await new Promise((r) => setTimeout(r, 2200));
+    await new Promise((r) => setTimeout(r, 1800));
     setLoading(false);
     setSent(true);
   };
@@ -214,108 +106,159 @@ export default function ContactSection() {
       id="contact"
       style={{
         background: "#040408",
-        padding: "clamp(80px, 12vh, 140px) clamp(24px, 5vw, 80px)",
+        padding: "0 clamp(24px, 5vw, 60px)",
+        paddingTop: "clamp(80px, 10vh, 120px)",
+        paddingBottom: "clamp(60px, 8vh, 100px)",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* ── Faint background grid lines (atmosphere) ── */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage:
-            "linear-gradient(rgba(58,155,213,0.03) 1px, transparent 1px), " +
-            "linear-gradient(90deg, rgba(58,155,213,0.03) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-          pointerEvents: "none",
-        }}
-      />
+      {/* ── Max-width wrapper ── */}
+      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
 
-      {/* ── Inner max-width container ── */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative" }}>
+        {/* ── Top: Section label + gradient rule ── */}
+        <div style={{ marginBottom: "clamp(48px, 6vh, 72px)" }}>
+          <span
+            className="ct-label"
+            style={{
+              fontFamily: "monospace",
+              fontSize: "11px",
+              letterSpacing: "0.2em",
+              color: "#3A9BD5",
+              textTransform: "uppercase" as const,
+              display: "block",
+              marginBottom: "28px",
+            }}
+          >
+            04 / Contact
+          </span>
+          <div
+            className="ct-topline"
+            style={{
+              height: "1px",
+              background:
+                "linear-gradient(90deg, #3A9BD5 0%, #7B4FD4 50%, transparent 100%)",
+            }}
+          />
+        </div>
 
-        {/* ── Two-column grid ── */}
+        {/* ── Main grid: headline left, form right ── */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "clamp(40px, 6vw, 100px)",
+            gridTemplateColumns: "1.1fr 1fr",
+            gap: "clamp(48px, 7vw, 120px)",
             alignItems: "start",
           }}
         >
-          {/* ════════════ LEFT — The Hook ════════════ */}
-          <div style={{ position: "sticky", top: "80px" }}>
-
-            {/* Massive headline */}
-            <div ref={headlineRef} style={{ marginBottom: "32px" }}>
-              <div
-                className="lr-line"
+          {/* ════ LEFT: Massive headline ════ */}
+          <div style={{ position: "sticky", top: "100px" }}>
+            <h2
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontWeight: 700,
+                fontSize: "clamp(52px, 7.5vw, 100px)",
+                color: "#E8EDF5",
+                letterSpacing: "-0.04em",
+                lineHeight: 0.95,
+                margin: "0 0 40px",
+                overflow: "hidden",
+              }}
+            >
+              <span className="ct-word" style={{ display: "inline-block" }}>
+                Let's&nbsp;
+              </span>
+              <span className="ct-word" style={{ display: "inline-block" }}>
+                build&nbsp;
+              </span>
+              <br />
+              <span
+                className="ct-word"
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 800,
-                  fontSize: "clamp(64px, 9vw, 120px)",
-                  color: "#E8EDF5",
-                  letterSpacing: "-0.05em",
-                  lineHeight: 0.88,
-                  display: "block",
+                  display: "inline-block",
+                  background:
+                    "linear-gradient(90deg, #3A9BD5, #7B4FD4)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                 }}
               >
-                INITIATE
-              </div>
-              <div
-                className="lr-line"
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 800,
-                  fontSize: "clamp(64px, 9vw, 120px)",
-                  color: "#3A9BD5",
-                  letterSpacing: "-0.05em",
-                  lineHeight: 0.88,
-                  display: "block",
-                  marginTop: "4px",
-                }}
-              >
-                SEQUENCE.
-              </div>
-            </div>
+                something&nbsp;
+              </span>
+              <br />
+              <span className="ct-word" style={{ display: "inline-block" }}>
+                real.
+              </span>
+            </h2>
 
-            {/* Subtext */}
+            {/* Subtitle */}
             <p
-              ref={subtextRef}
+              className="ct-word"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "clamp(13px, 1.4vw, 15px)",
+                fontSize: "clamp(14px, 1.4vw, 16px)",
                 color: "#3A4A5A",
                 lineHeight: 1.7,
-                maxWidth: "340px",
+                maxWidth: "380px",
                 margin: "0 0 48px",
               }}
             >
-              Stop launching generic products.{" "}
-              <span style={{ color: "#6A8A9A" }}>
-                Architect a digital asset.
-              </span>{" "}
-              Enter your parameters below.
+              Have a project, an idea, or just want to talk shop? 
+              Drop your details and we'll get back within 24 hours.
             </p>
 
-            {/* Decorative terminal line */}
-            <div
-              style={{
-                fontFamily: "monospace",
-                fontSize: "11px",
-                color: "#1B2A3A",
-                letterSpacing: "0.15em",
-                marginBottom: "24px",
-              }}
-            >
-              ──────────────────────────
+            {/* Direct info */}
+            <div className="ct-word" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <a
+                href="mailto:lockrythm@gmail.com"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "15px",
+                  color: "#5A6880",
+                  textDecoration: "none",
+                  transition: "color 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+                onMouseEnter={(e) =>
+                  ((e.currentTarget as HTMLAnchorElement).style.color = "#E8EDF5")
+                }
+                onMouseLeave={(e) =>
+                  ((e.currentTarget as HTMLAnchorElement).style.color = "#5A6880")
+                }
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                lockrythm@gmail.com
+              </a>
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "15px",
+                  color: "#5A6880",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                Sahiwal, Pakistan
+              </span>
             </div>
 
-            {/* Social links */}
-            <div style={{ display: "flex", gap: "20px" }}>
-              {SOCIALS.map(({ label, href, Icon }) => (
+            {/* Socials */}
+            <div className="ct-word" style={{ display: "flex", gap: "16px", marginTop: "36px" }}>
+              {[
+                { label: "Instagram", href: "https://www.instagram.com/lockrhythm/", d: "M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01", rect: true },
+                { label: "LinkedIn", href: "https://www.linkedin.com/company/lockrythm", d: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 4a2 2 0 1 0 0 .001" },
+                { label: "X", href: "https://x.com/lockrythm", d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.727-8.835L1.254 2.25H8.08l4.253 5.622z", fill: true },
+              ].map(({ label, href, d, rect, fill }) => (
                 <a
                   key={label}
                   href={href}
@@ -323,205 +266,284 @@ export default function ContactSection() {
                   rel="noopener noreferrer"
                   title={label}
                   style={{
-                    color: "#3A4A5A",
-                    textDecoration: "none",
-                    transition: "color 0.2s",
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    border: "1px solid rgba(255,255,255,0.08)",
                     display: "flex",
                     alignItems: "center",
+                    justifyContent: "center",
+                    color: "#5A6880",
+                    textDecoration: "none",
+                    transition: "all 0.3s ease",
                   }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = "#3A9BD5")
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = "#3A4A5A")
-                  }
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#3A9BD5";
+                    (e.currentTarget as HTMLAnchorElement).style.color = "#3A9BD5";
+                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(58,155,213,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)";
+                    (e.currentTarget as HTMLAnchorElement).style.color = "#5A6880";
+                    (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                  }}
                 >
-                  <Icon />
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill={fill ? "currentColor" : "none"} stroke={fill ? "none" : "currentColor"} strokeWidth="1.5">
+                    {rect && <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />}
+                    <path d={d} />
+                  </svg>
                 </a>
               ))}
             </div>
           </div>
 
-          {/* ════════════ RIGHT — The Terminal ════════════ */}
+          {/* ════ RIGHT: The form ════ */}
           <div>
-            {/* Terminal header bar */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                marginBottom: "36px",
-                paddingBottom: "16px",
-                borderBottom: "1px solid #0D1A24",
-              }}
-            >
-              {["#FF5F57", "#FFBD2E", "#28CA41"].map((c) => (
-                <span
-                  key={c}
-                  style={{
-                    width: "10px",
-                    height: "10px",
-                    borderRadius: "50%",
-                    background: c,
-                    opacity: 0.6,
-                  }}
-                />
-              ))}
-              <span
+            {!sent ? (
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+                {/* Name */}
+                <div className="ct-right-item" style={{ borderBottom: "1px solid #0D1520", paddingBottom: "32px", marginBottom: "32px" }}>
+                  <label
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: "10px",
+                      letterSpacing: "0.2em",
+                      color: "#3A4A5A",
+                      display: "block",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    01 — YOUR NAME
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Doe"
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "clamp(20px, 2.5vw, 28px)",
+                      fontWeight: 500,
+                      color: "#E8EDF5",
+                      letterSpacing: "-0.02em",
+                      padding: 0,
+                      caretColor: "#3A9BD5",
+                    }}
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="ct-right-item" style={{ borderBottom: "1px solid #0D1520", paddingBottom: "32px", marginBottom: "32px" }}>
+                  <label
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: "10px",
+                      letterSpacing: "0.2em",
+                      color: "#3A4A5A",
+                      display: "block",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    02 — YOUR EMAIL
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "clamp(20px, 2.5vw, 28px)",
+                      fontWeight: 500,
+                      color: "#E8EDF5",
+                      letterSpacing: "-0.02em",
+                      padding: 0,
+                      caretColor: "#3A9BD5",
+                    }}
+                  />
+                </div>
+
+                {/* Message */}
+                <div className="ct-right-item" style={{ borderBottom: "1px solid #0D1520", paddingBottom: "32px", marginBottom: "48px" }}>
+                  <label
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: "10px",
+                      letterSpacing: "0.2em",
+                      color: "#3A4A5A",
+                      display: "block",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    03 — TELL US ABOUT YOUR PROJECT
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="I need a web app that..."
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "clamp(18px, 2vw, 24px)",
+                      fontWeight: 500,
+                      color: "#E8EDF5",
+                      letterSpacing: "-0.02em",
+                      padding: 0,
+                      resize: "none",
+                      lineHeight: 1.5,
+                      caretColor: "#3A9BD5",
+                    }}
+                  />
+                </div>
+
+                {/* Submit */}
+                <div className="ct-right-item">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      background: "transparent",
+                      border: "1px solid rgba(139,175,200,0.3)",
+                      padding: "18px 40px",
+                      borderRadius: "6px",
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      color: "#8BAFC8",
+                      cursor: loading ? "wait" : "pointer",
+                      transition: "all 0.3s ease",
+                      letterSpacing: "0.02em",
+                      opacity: loading ? 0.6 : 1,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (loading) return;
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = "#8BAFC8";
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(139,175,200,0.08)";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#E8EDF5";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(139,175,200,0.3)";
+                      (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#8BAFC8";
+                    }}
+                  >
+                    {loading ? "Sending..." : "Send Message"}{" "}
+                    <span style={{ fontSize: "18px", transition: "transform 0.3s" }}>→</span>
+                  </button>
+                </div>
+              </form>
+            ) : (
+              /* ── Success state ── */
+              <div
                 style={{
-                  fontFamily: "monospace",
-                  fontSize: "10px",
-                  color: "#1B2A3A",
-                  letterSpacing: "0.15em",
-                  marginLeft: "8px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "24px",
+                  padding: "60px 0",
                 }}
               >
-                lockrhythm:~/contact — bash
-              </span>
-            </div>
-
-            {/* Form */}
-            <form
-              ref={formRef}
-              onSubmit={handleSubmit}
-              style={{ display: "flex", flexDirection: "column", gap: "32px" }}
-            >
-              <div className="lr-field">
-                <TerminalInput
-                  label="IDENTITY"
-                  placeholder="YOUR NAME"
-                  value={name}
-                  onChange={setName}
-                />
-              </div>
-
-              <div className="lr-field">
-                <TerminalInput
-                  label="UPLINK ADDRESS"
-                  type="email"
-                  placeholder="YOUR EMAIL"
-                  value={email}
-                  onChange={setEmail}
-                />
-              </div>
-
-              <div className="lr-field">
-                <TerminalInput
-                  label="MISSION PARAMETERS"
-                  placeholder="PROJECT SCOPE — DESCRIBE WHAT YOU WANT BUILT"
-                  isTextarea
-                  value={scope}
-                  onChange={setScope}
-                />
-              </div>
-
-              {/* Submit button */}
-              <div className="lr-field">
-                <button
-                  type="submit"
-                  disabled={loading || sent}
-                  onMouseEnter={() => setBtnHover(true)}
-                  onMouseLeave={() => setBtnHover(false)}
+                <div
                   style={{
-                    width: "100%",
-                    padding: "18px 24px",
-                    background: sent
-                      ? "rgba(58,155,213,0.12)"
-                      : btnHover && !loading
-                      ? "#3A9BD5"
-                      : "transparent",
-                    border: `1px solid ${sent ? "rgba(58,155,213,0.3)" : "#3A9BD5"}`,
-                    color: sent
-                      ? "#3A9BD5"
-                      : btnHover && !loading
-                      ? "#040408"
-                      : "#3A9BD5",
-                    fontFamily: "monospace",
-                    fontSize: "12px",
-                    letterSpacing: "0.2em",
-                    fontWeight: 600,
-                    cursor: loading || sent ? "default" : "pointer",
-                    transition: "all 0.25s ease",
-                    borderRadius: "2px",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "50%",
+                    border: "1px solid #3A9BD5",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#3A9BD5",
+                    fontSize: "20px",
                   }}
                 >
-                  {sent
-                    ? "// SEQUENCE INITIATED ✓"
-                    : loading
-                    ? "// INITIALIZING SEQUENCE..."
-                    : "// TRANSMIT →"}
+                  ✓
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "clamp(28px, 3vw, 40px)",
+                    color: "#E8EDF5",
+                    letterSpacing: "-0.03em",
+                    margin: 0,
+                  }}
+                >
+                  Message received.
+                </h3>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "15px",
+                    color: "#5A6880",
+                    margin: 0,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  We'll review your project details and respond within 24 hours.
+                </p>
+                <button
+                  onClick={() => {
+                    setSent(false);
+                    setName("");
+                    setEmail("");
+                    setMessage("");
+                  }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "14px",
+                    color: "#3A9BD5",
+                    cursor: "pointer",
+                    padding: 0,
+                    marginTop: "8px",
+                    textAlign: "left",
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={(e) =>
+                    ((e.currentTarget as HTMLButtonElement).style.color = "#E8EDF5")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.currentTarget as HTMLButtonElement).style.color = "#3A9BD5")
+                  }
+                >
+                  ← Send another message
                 </button>
               </div>
-            </form>
-
-            {/* Footer direct links */}
-            <div
-              ref={footerRef}
-              style={{
-                marginTop: "48px",
-                paddingTop: "24px",
-                borderTop: "1px solid #0D1A24",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "monospace",
-                  fontSize: "9px",
-                  letterSpacing: "0.2em",
-                  color: "#1B2A3A",
-                  margin: "0 0 10px",
-                }}
-              >
-                DIRECT UPLINK
-              </p>
-              <a
-                href="mailto:lockrythm@gmail.com"
-                style={{
-                  fontFamily: "monospace",
-                  fontSize: "12px",
-                  letterSpacing: "0.08em",
-                  color: "#3A4A5A",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#3A9BD5")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#3A4A5A")
-                }
-              >
-                lockrythm@gmail.com
-              </a>
-
-              {/* Blinking cursor */}
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "8px",
-                  height: "14px",
-                  background: "#3A9BD5",
-                  marginLeft: "6px",
-                  verticalAlign: "middle",
-                  animation: "lr-blink 1.1s step-end infinite",
-                }}
-              />
-            </div>
+            )}
           </div>
         </div>
 
-        {/* ── Bottom copyright strip ── */}
+        {/* ── Bottom row ── */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginTop: "clamp(60px, 8vh, 100px)",
+            marginTop: "clamp(80px, 10vh, 140px)",
             paddingTop: "24px",
-            borderTop: "1px solid #0D1A24",
+            borderTop: "1px solid rgba(58,155,213,0.1)",
           }}
         >
           <span
+            className="ct-bottom-item"
             style={{
               fontFamily: "monospace",
               fontSize: "10px",
@@ -532,6 +554,7 @@ export default function ContactSection() {
             © 2025 LOCKRHYTHM
           </span>
           <span
+            className="ct-bottom-item"
             style={{
               fontFamily: "monospace",
               fontSize: "10px",
@@ -539,16 +562,23 @@ export default function ContactSection() {
               letterSpacing: "0.15em",
             }}
           >
-            AVAILABLE FOR NEW PROJECTS — 2025
+            AVAILABLE FOR NEW PROJECTS
           </span>
         </div>
       </div>
 
-      {/* ── Keyframes ── */}
+      {/* ── Placeholder styles ── */}
       <style>{`
-        @keyframes lr-blink {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0; }
+        #contact input::placeholder,
+        #contact textarea::placeholder {
+          color: #1A2430;
+          font-family: 'Space Grotesk', sans-serif;
+          font-weight: 400;
+          letter-spacing: -0.02em;
+        }
+        #contact input:focus::placeholder,
+        #contact textarea:focus::placeholder {
+          color: #2A3A4A;
         }
         @media (max-width: 768px) {
           #contact > div > div[style*="grid-template-columns"] {
