@@ -318,7 +318,7 @@ export function ParticleHero() {
       />
 
       {/* Hero Text Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full pt-40 px-4 text-center pointer-events-none">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full pt-64 px-4 text-center pointer-events-none">
         <div className="fade-in-title">
           <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.1] tracking-tight">
             We Build <br />
