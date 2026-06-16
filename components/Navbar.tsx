@@ -32,11 +32,11 @@ export default function Navbar() {
         justifyContent: "space-between",
       }}>
         {/* Brand */}
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "2px", position: "relative", marginLeft: "-10px" }}
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0", position: "relative", marginLeft: "-10px" }}
           onClick={() => setOpen(false)}>
           <div style={{
-            width: "72px", 
-            height: "72px", 
+            width: "clamp(56px, 10vw, 72px)", 
+            height: "clamp(56px, 10vw, 72px)", 
             display: "flex", 
             alignItems: "center", 
             justifyContent: "center",
@@ -46,9 +46,10 @@ export default function Navbar() {
           <span style={{
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 700,
-            fontSize: "24px",
+            fontSize: "clamp(20px, 5vw, 24px)",
             letterSpacing: "-0.03em",
             color: "#E8EDF5",
+            marginLeft: "-6px",
           }}>
             Lock<span style={{ color: "#8BAFC8" }}>rhythm</span>
           </span>
