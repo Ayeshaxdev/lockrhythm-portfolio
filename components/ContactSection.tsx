@@ -107,8 +107,8 @@ export default function ContactSection() {
       style={{
         background: "#040408",
         padding: "0 clamp(24px, 5vw, 60px)",
-        paddingTop: "clamp(80px, 10vh, 120px)",
-        paddingBottom: "clamp(60px, 8vh, 100px)",
+        paddingTop: "clamp(40px, 6vh, 120px)",
+        paddingBottom: "clamp(40px, 6vh, 100px)",
         position: "relative",
         overflow: "hidden",
       }}
@@ -146,7 +146,7 @@ export default function ContactSection() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1.1fr 1fr",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
             gap: "clamp(48px, 7vw, 120px)",
             alignItems: "start",
           }}

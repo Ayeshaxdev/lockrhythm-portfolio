@@ -178,11 +178,11 @@ export default function ServicesSection() {
         style={{
           display: "flex",
           alignItems: "flex-start",
-          paddingTop: "280px", // explicitly push cards below the header
+          paddingTop: "clamp(180px, 25vh, 280px)", // responsive top gap
           height: "100vh",
-          gap: "40px",
-          paddingLeft: "64px",
-          paddingRight: "120px",
+          gap: "clamp(24px, 5vw, 40px)",
+          paddingLeft: "clamp(24px, 6vw, 64px)",
+          paddingRight: "clamp(24px, 10vw, 120px)",
           width: "max-content",
           position: "relative",
           zIndex: 5,
@@ -193,13 +193,14 @@ export default function ServicesSection() {
             key={svc.number}
             ref={(el) => { if (el) cardsRef.current[i] = el; }}
             style={{
-              width: "280px", 
-              height: "360px",
+              width: "clamp(240px, 80vw, 280px)", 
+              height: "auto",
+              minHeight: "360px",
               flexShrink: 0,
               background: "rgba(255,255,255,0.02)",
               border: "1px solid rgba(255,255,255,0.08)",
               borderRadius: "6px",
-              padding: "40px",
+              padding: "clamp(24px, 6vw, 40px)",
               display: "flex",
               flexDirection: "column",
               gap: "24px",

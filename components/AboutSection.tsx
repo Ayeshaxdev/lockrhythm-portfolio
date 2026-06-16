@@ -253,7 +253,7 @@ export default function AboutSection() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        padding: "clamp(60px, 8vh, 80px) clamp(24px, 5vw, 64px)",
+        padding: "clamp(40px, 6vh, 80px) clamp(24px, 5vw, 64px)",
         position: "relative",
         overflow: "hidden",
       }}
