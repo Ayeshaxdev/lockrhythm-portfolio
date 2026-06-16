@@ -63,7 +63,7 @@ const projects = [
     year: "2025",
     description:
       "A fully digital adaptation of the classic strategy board game with complex state management and interactive gameplay.",
-    href: "#", // ← Add link later
+    href: "https://sequence1-9f067z5e.b4a.run",
     localImage: "/screenshots/sequence.png",
     color1: "#1a1000",
     color2: "#4A3800",
