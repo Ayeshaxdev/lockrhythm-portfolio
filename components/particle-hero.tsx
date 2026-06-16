@@ -144,7 +144,7 @@ export function ParticleHero() {
 
   return (
     <div
-      className={`relative h-[800px] w-full overflow-hidden bg-[#040408] ${isAltMode ? "alt-mode" : ""}`}
+      className={`relative h-[85vh] min-h-[600px] w-full overflow-hidden bg-[#040408] ${isAltMode ? "alt-mode" : ""}`}
       style={{ 
         fontSize: "max(calc(min(600px, 80vh) * 0.03), 10px)",
         WebkitFontSmoothing: "antialiased",

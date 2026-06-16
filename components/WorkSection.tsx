@@ -317,7 +317,7 @@ export default function WorkSection() {
       style={{
         background: "#040408",
         minHeight: "100vh",
-        padding: "60px 60px 80px",
+        padding: "20px 60px 80px",
       }}
     >
       {/* ── Section header ── */}
