@@ -35,13 +35,13 @@ export default function Navbar() {
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "12px", position: "relative" }}
           onClick={() => setOpen(false)}>
           <div style={{
-            width: "48px", 
-            height: "48px", 
+            width: "56px", 
+            height: "56px", 
             display: "flex", 
             alignItems: "center", 
             justifyContent: "center",
           }}>
-            <img src="/lockrhythm-logo.svg" alt="Lockrhythm Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            <img src="/transparent-image.png" alt="Lockrhythm Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <span style={{
             fontFamily: "'Space Grotesk', sans-serif",
