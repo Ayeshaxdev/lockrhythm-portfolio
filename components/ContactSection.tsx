@@ -146,7 +146,7 @@ export default function ContactSection() {
             {/* Quick info */}
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
               {[
-                { label: "Email",     value: "hello@lockrhythm.com", href: "mailto:hello@lockrhythm.com" },
+                { label: "Email",     value: "lockrythm@gmail.com", href: "mailto:lockrythm@gmail.com" },
                 { label: "Instagram", value: "@lockrhythm",          href: "https://www.instagram.com/lockrhythm/" },
                 { label: "LinkedIn",  value: "LockRhythm",           href: "https://www.linkedin.com/company/lockrythm" },
                 { label: "Location",  value: "Sahiwal, Pakistan",     href: undefined },
