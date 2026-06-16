@@ -302,7 +302,7 @@ export default function ContactSection() {
             {!sent ? (
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0" }}>
                 {/* Name */}
-                <div className="ct-right-item" style={{ borderBottom: "1px solid #0D1520", paddingBottom: "32px", marginBottom: "32px" }}>
+                <div className="ct-right-item" style={{ borderBottom: "1px solid #1A2A38", paddingBottom: "32px", marginBottom: "32px" }}>
                   <label
                     style={{
                       fontFamily: "monospace",
@@ -338,7 +338,7 @@ export default function ContactSection() {
                 </div>
 
                 {/* Email */}
-                <div className="ct-right-item" style={{ borderBottom: "1px solid #0D1520", paddingBottom: "32px", marginBottom: "32px" }}>
+                <div className="ct-right-item" style={{ borderBottom: "1px solid #1A2A38", paddingBottom: "32px", marginBottom: "32px" }}>
                   <label
                     style={{
                       fontFamily: "monospace",
@@ -374,7 +374,7 @@ export default function ContactSection() {
                 </div>
 
                 {/* Message */}
-                <div className="ct-right-item" style={{ borderBottom: "1px solid #0D1520", paddingBottom: "32px", marginBottom: "48px" }}>
+                <div className="ct-right-item" style={{ borderBottom: "1px solid #1A2A38", paddingBottom: "32px", marginBottom: "48px" }}>
                   <label
                     style={{
                       fontFamily: "monospace",
@@ -531,54 +531,21 @@ export default function ContactSection() {
           </div>
         </div>
 
-        {/* ── Bottom row ── */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "clamp(80px, 10vh, 140px)",
-            paddingTop: "24px",
-            borderTop: "1px solid rgba(58,155,213,0.1)",
-          }}
-        >
-          <span
-            className="ct-bottom-item"
-            style={{
-              fontFamily: "monospace",
-              fontSize: "10px",
-              color: "#1B2A3A",
-              letterSpacing: "0.15em",
-            }}
-          >
-            © 2025 LOCKRHYTHM
-          </span>
-          <span
-            className="ct-bottom-item"
-            style={{
-              fontFamily: "monospace",
-              fontSize: "10px",
-              color: "#1B2A3A",
-              letterSpacing: "0.15em",
-            }}
-          >
-            AVAILABLE FOR NEW PROJECTS
-          </span>
-        </div>
+
       </div>
 
       {/* ── Placeholder styles ── */}
       <style>{`
         #contact input::placeholder,
         #contact textarea::placeholder {
-          color: #1A2430;
+          color: #3A4A5A;
           font-family: 'Space Grotesk', sans-serif;
           font-weight: 400;
           letter-spacing: -0.02em;
         }
         #contact input:focus::placeholder,
         #contact textarea:focus::placeholder {
-          color: #2A3A4A;
+          color: #4A5A6A;
         }
         @media (max-width: 768px) {
           #contact > div > div[style*="grid-template-columns"] {
