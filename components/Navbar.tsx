@@ -32,8 +32,18 @@ export default function Navbar() {
         justifyContent: "space-between",
       }}>
         {/* Brand */}
-        <Link href="/" style={{ textDecoration: "none" }}
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "12px", position: "relative" }}
           onClick={() => setOpen(false)}>
+          <div style={{
+            width: "36px", 
+            height: "36px", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            mixBlendMode: "screen" // Ensures it blends well if it has a dark background
+          }}>
+            <img src="/logo.png" alt="Lockrhythm Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+          </div>
           <span style={{
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 700,
