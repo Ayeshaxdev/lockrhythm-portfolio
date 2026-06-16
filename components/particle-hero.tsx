@@ -144,7 +144,7 @@ export function ParticleHero() {
 
   return (
     <div
-      className={`relative h-[85vh] min-h-[600px] w-full overflow-hidden bg-[#040408] ${isAltMode ? "alt-mode" : ""}`}
+      className={`relative h-[100vh] w-full overflow-hidden bg-[#040408] ${isAltMode ? "alt-mode" : ""}`}
       style={{ 
         fontSize: "max(calc(min(600px, 80vh) * 0.03), 10px)",
         WebkitFontSmoothing: "antialiased",
@@ -318,7 +318,7 @@ export function ParticleHero() {
       />
 
       {/* Hero Text Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full pt-40 px-4 text-center pointer-events-none">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center pointer-events-none">
         <div className="fade-in-title">
           <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.1] tracking-tight">
             We Build <br />
