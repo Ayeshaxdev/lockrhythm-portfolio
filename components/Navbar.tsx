@@ -35,8 +35,8 @@ export default function Navbar() {
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "12px", position: "relative" }}
           onClick={() => setOpen(false)}>
           <div style={{
-            width: "56px", 
-            height: "56px", 
+            width: "72px", 
+            height: "72px", 
             display: "flex", 
             alignItems: "center", 
             justifyContent: "center",
