@@ -1,558 +1,395 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import RevealText from "@/components/motion/RevealText";
+import WhatsAppIcon from "@/components/motion/WhatsAppIcon";
+import { SERVICE_EVENT } from "@/lib/intro";
+import { EMAIL, WHATSAPP_DISPLAY, whatsappHref } from "@/lib/contact";
+
+const SERVICES = ["Web Engineering", "Mobile App", "UI/UX Design", "AI Solutions", "Digital Marketing", "Not sure yet"];
+const BUDGETS = ["< $1k", "$1k – $5k", "$5k – $15k", "$15k+", "Let's discuss"];
+
+const PROMISES = [
+  "Reply within 24 hours",
+  "Free project plan & clear quote",
+  "No commitment, no spam",
+];
+
+const SOCIALS = [
+  { label: "Instagram", href: "https://www.instagram.com/lockrhythm/" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/lockrythm" },
+  { label: "X", href: "https://x.com/lockrythm" },
+];
+
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`relative rounded-full px-4 py-2.5 text-[13px] md:text-[14px] font-medium border transition-colors duration-300 ${
+        active ? "border-transparent text-white" : "border-white/12 text-[#A9B6C6] hover:border-white/35 hover:text-white"
+      }`}
+    >
+      {active && (
+        <motion.span
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="absolute inset-0 rounded-full bg-gradient-to-r from-[#3A9BD5] to-[#7B4FD4]"
+        />
+      )}
+      <span className="relative">{children}</span>
+    </button>
+  );
+}
+
+function Field({
+  n,
+  label,
+  children,
+}: {
+  n: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="group relative border-b border-white/[0.09] pb-6 mb-8 focus-within:border-transparent">
+      <label className="block font-mono text-[10px] tracking-[0.2em] uppercase text-[#5A6880] mb-3 group-focus-within:text-[#3A9BD5] transition-colors">
+        {n} — {label}
+      </label>
+      {children}
+      <span className="pointer-events-none absolute -bottom-px left-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[#3A9BD5] to-[#7B4FD4] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-focus-within:scale-x-100" />
+    </div>
+  );
+}
+
+const inputCls =
+  "w-full bg-transparent border-0 outline-none p-0 font-display font-medium text-[clamp(20px,2.4vw,28px)] tracking-[-0.02em] text-[#E8EDF5] caret-[#3A9BD5] placeholder:text-[#3A4A5A] placeholder:font-normal";
 
 export default function ContactSection() {
-  const sectionRef = useRef<HTMLElement>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [service, setService] = useState("");
+  const [budget, setBudget] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [hp, setHp] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "mailto" | "error">("idle");
+  const [error, setError] = useState("");
 
-  // ── GSAP entrance ──
+  // "Discuss this" buttons elsewhere pre-select a service.
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const ctx = gsap.context(() => {
-      // Section number + rule
-      gsap.fromTo(
-        ".ct-topline",
-        { width: 0, opacity: 0 },
-        {
-          width: "100%",
-          opacity: 1,
-          duration: 1.2,
-          ease: "power3.inOut",
-          scrollTrigger: { trigger: section, start: "top 80%" },
-        }
-      );
-
-      gsap.fromTo(
-        ".ct-label",
-        { opacity: 0, x: -20 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.6,
-          ease: "power3.out",
-          scrollTrigger: { trigger: section, start: "top 78%" },
-        }
-      );
-
-      // Headline words
-      gsap.fromTo(
-        ".ct-word",
-        { y: 120, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          stagger: 0.08,
-          ease: "power4.out",
-          scrollTrigger: { trigger: section, start: "top 72%" },
-        }
-      );
-
-      // Right column content
-      gsap.fromTo(
-        ".ct-right-item",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: { trigger: section, start: "top 65%" },
-        }
-      );
-
-      // Bottom row
-      gsap.fromTo(
-        ".ct-bottom-item",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: section, start: "top 50%" },
-        }
-      );
-    }, section);
-
-    return () => ctx.revert();
+    const h = (e: Event) => {
+      const s = (e as CustomEvent<string>).detail;
+      if (SERVICES.includes(s)) setService(s);
+    };
+    window.addEventListener(SERVICE_EVENT, h);
+    return () => window.removeEventListener(SERVICE_EVENT, h);
   }, []);
 
-  // ── Submit ──
+  const mailtoHref = () => {
+    const subject = `Project enquiry: ${service || "New project"} — ${name}`;
+    const bodyText = `Hi LockRhythm,\n\n${message}\n\n—\nName: ${name}\nEmail: ${email}\nService: ${service || "-"}\nBudget: ${budget || "-"}`;
+    return `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !message) return;
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    setLoading(false);
-    setSent(true);
+    setError("");
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setError("Please add your name, email and a few words about the project.");
+      return;
+    }
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, service, budget, message, company_website: hp }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        setStatus("sent");
+        return;
+      }
+      if (data.fallback === "mailto") {
+        window.location.href = mailtoHref();
+        setStatus("mailto");
+        return;
+      }
+      setError(data.error || "Something went wrong.");
+      setStatus("error");
+    } catch {
+      window.location.href = mailtoHref();
+      setStatus("mailto");
+    }
+  };
+
+  const reset = () => {
+    setStatus("idle");
+    setName("");
+    setEmail("");
+    setMessage("");
+    setService("");
+    setBudget("");
   };
 
   return (
-    <section
-      ref={sectionRef}
-      id="contact"
-      style={{
-        background: "#040408",
-        padding: "0 clamp(24px, 5vw, 60px)",
-        paddingTop: "clamp(40px, 6vh, 120px)",
-        paddingBottom: "clamp(40px, 6vh, 100px)",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* ── Max-width wrapper ── */}
-      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+    <section id="contact" className="relative bg-[#040408] px-5 md:px-12 lg:px-16 py-24 md:py-32 overflow-hidden">
+      {/* Ambient glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 right-[-20%] h-[700px] w-[700px] rounded-full opacity-60 blur-[120px]"
+        style={{ background: "radial-gradient(circle, rgba(123,79,212,0.25), transparent 65%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-[-20%] left-[-10%] h-[600px] w-[600px] rounded-full opacity-60 blur-[120px]"
+        style={{ background: "radial-gradient(circle, rgba(58,155,213,0.18), transparent 65%)" }}
+      />
 
-        {/* ── Top: Section label + gradient rule ── */}
-        <div style={{ marginBottom: "clamp(48px, 6vh, 72px)" }}>
-          <span
-            className="ct-label"
-            style={{
-              fontFamily: "monospace",
-              fontSize: "11px",
-              letterSpacing: "0.2em",
-              color: "#3A9BD5",
-              textTransform: "uppercase" as const,
-              display: "block",
-              marginBottom: "28px",
-            }}
-          >
-            04 / Contact
-          </span>
-          <div
-            className="ct-topline"
-            style={{
-              height: "1px",
-              background:
-                "linear-gradient(90deg, #3A9BD5 0%, #7B4FD4 50%, transparent 100%)",
-            }}
-          />
-        </div>
-
-        {/* ── Main grid: headline left, form right ── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "clamp(48px, 7vw, 120px)",
-            alignItems: "start",
-          }}
+      <div className="relative mx-auto max-w-[1320px]">
+        <motion.span
+          className="block font-mono text-[11px] tracking-[0.2em] uppercase text-[#3A9BD5] mb-7"
+          initial={{ opacity: 0, x: -16 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
         >
-          {/* ════ LEFT: Massive headline ════ */}
-          <div style={{ position: "sticky", top: "100px" }}>
-            <h2
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(52px, 7.5vw, 100px)",
-                color: "#E8EDF5",
-                letterSpacing: "-0.04em",
-                lineHeight: 0.95,
-                margin: "0 0 40px",
-                overflow: "hidden",
-              }}
-            >
-              <span className="ct-word" style={{ display: "inline-block" }}>
-                Let's&nbsp;
-              </span>
-              <span className="ct-word" style={{ display: "inline-block" }}>
-                build&nbsp;
-              </span>
-              <br />
-              <span
-                className="ct-word"
-                style={{
-                  display: "inline-block",
-                  background:
-                    "linear-gradient(90deg, #3A9BD5, #7B4FD4)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                something&nbsp;
-              </span>
-              <br />
-              <span className="ct-word" style={{ display: "inline-block" }}>
-                real.
-              </span>
-            </h2>
+          06 / Contact
+        </motion.span>
+        <motion.div
+          className="h-px mb-14 origin-left"
+          style={{ background: "linear-gradient(90deg, #3A9BD5 0%, #7B4FD4 50%, transparent 100%)" }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.4, ease: [0.65, 0, 0.35, 1] }}
+        />
 
-            {/* Subtitle */}
-            <p
-              className="ct-word"
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: "clamp(14px, 1.4vw, 16px)",
-                color: "#3A4A5A",
-                lineHeight: 1.7,
-                maxWidth: "380px",
-                margin: "0 0 48px",
-              }}
+        <div className="grid gap-14 lg:grid-cols-[1fr_1.15fr] lg:gap-24">
+          {/* Left */}
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <RevealText
+              segments={["Let's build", { text: "", br: true }, { text: "something", className: "text-gradient" }, "real."]}
+              className="font-display font-bold text-[clamp(52px,7.5vw,108px)] leading-[0.95] tracking-[-0.045em] text-[#E8EDF5]"
+            />
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mt-8 max-w-[420px] text-[16px] leading-relaxed text-[#8A99AD]"
             >
-              Have a project, an idea, or just want to talk shop? 
-              Drop your details and we'll get back within 24 hours.
-            </p>
+              Tell us what you&apos;re building. We&apos;ll reply with honest advice, a plan and a quote — even if we&apos;re
+              not the right fit.
+            </motion.p>
 
-            {/* Direct info */}
-            <div className="ct-word" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <a
-                href="mailto:lockrythm@gmail.com"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "15px",
-                  color: "#5A6880",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#E8EDF5")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLAnchorElement).style.color = "#5A6880")
-                }
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-                lockrythm@gmail.com
+            <ul className="mt-8 flex flex-col gap-3">
+              {PROMISES.map((p, i) => (
+                <motion.li
+                  key={p}
+                  initial={{ opacity: 0, x: -16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.4 + i * 0.1 }}
+                  className="flex items-center gap-3 text-[15px] text-[#E8EDF5]"
+                >
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#3A9BD5]/15 text-[#3A9BD5] text-[12px]">
+                    ✓
+                  </span>
+                  {p}
+                </motion.li>
+              ))}
+            </ul>
+
+            <div className="mt-10 flex flex-col gap-3 text-[15px]">
+              <a href={`mailto:${EMAIL}`} className="link-underline self-start text-[#E8EDF5]">
+                {EMAIL}
               </a>
-              <span
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "15px",
-                  color: "#5A6880",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                }}
+              {/* WhatsApp: fastest channel for most clients */}
+              <a
+                href={whatsappHref()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group mt-1 inline-flex self-start items-center gap-3 rounded-full border border-[#25D366]/40 bg-[#25D366]/10 py-2 pl-2 pr-5 text-[#E8EDF5] transition-colors hover:bg-[#25D366]/20"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                Sahiwal, Pakistan
-              </span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white transition-transform duration-500 group-hover:scale-110">
+                  <WhatsAppIcon className="h-[18px] w-[18px]" />
+                </span>
+                <span className="flex flex-col leading-tight">
+                  <span className="text-[14px] font-semibold">Chat on WhatsApp</span>
+                  <span className="text-[12px] text-[#8A99AD]">{WHATSAPP_DISPLAY}</span>
+                </span>
+              </a>
+              <span className="text-[#7D8BA0]">Sahiwal, Pakistan — working worldwide</span>
             </div>
 
-            {/* Socials */}
-            <div className="ct-word" style={{ display: "flex", gap: "16px", marginTop: "36px" }}>
-              {[
-                { label: "Instagram", href: "https://www.instagram.com/lockrhythm/", d: "M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01", rect: true },
-                { label: "LinkedIn", href: "https://www.linkedin.com/company/lockrythm", d: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 4a2 2 0 1 0 0 .001" },
-                { label: "X", href: "https://x.com/lockrythm", d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.727-8.835L1.254 2.25H8.08l4.253 5.622z", fill: true },
-              ].map(({ label, href, d, rect, fill }) => (
+            <div className="mt-8 flex gap-3">
+              {SOCIALS.map((s) => (
                 <a
-                  key={label}
-                  href={href}
+                  key={s.label}
+                  href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title={label}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#5A6880",
-                    textDecoration: "none",
-                    transition: "all 0.3s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#3A9BD5";
-                    (e.currentTarget as HTMLAnchorElement).style.color = "#3A9BD5";
-                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(58,155,213,0.08)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)";
-                    (e.currentTarget as HTMLAnchorElement).style.color = "#5A6880";
-                    (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                  }}
+                  className="rounded-full border border-white/10 px-4 py-2 text-[13px] text-[#A9B6C6] transition-colors hover:border-[#3A9BD5] hover:text-white"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill={fill ? "currentColor" : "none"} stroke={fill ? "none" : "currentColor"} strokeWidth="1.5">
-                    {rect && <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />}
-                    <path d={d} />
-                  </svg>
+                  {s.label}
                 </a>
               ))}
             </div>
           </div>
 
-          {/* ════ RIGHT: The form ════ */}
-          <div>
-            {!sent ? (
-              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-                {/* Name */}
-                <div className="ct-right-item" style={{ borderBottom: "1px solid #1A2A38", paddingBottom: "32px", marginBottom: "32px" }}>
-                  <label
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "10px",
-                      letterSpacing: "0.2em",
-                      color: "#3A4A5A",
-                      display: "block",
-                      marginBottom: "12px",
-                    }}
+          {/* Right — form */}
+          <div className="relative">
+            <AnimatePresence mode="wait">
+              {status === "sent" || status === "mailto" ? (
+                <motion.div
+                  key="done"
+                  initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col gap-6 rounded-3xl border border-white/[0.08] bg-white/[0.02] p-10 md:p-14"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: -90 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.2 }}
+                    className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#3A9BD5] to-[#7B4FD4] text-2xl text-white"
                   >
-                    01 — YOUR NAME
-                  </label>
+                    ✓
+                  </motion.div>
+                  <h3 className="font-display font-bold text-[clamp(30px,3.4vw,44px)] leading-[1.05] tracking-[-0.035em] text-[#E8EDF5]">
+                    {status === "sent" ? `Thanks, ${name.split(" ")[0] || "friend"} — message received.` : "Almost there — hit send in your email app."}
+                  </h3>
+                  <p className="text-[16px] leading-relaxed text-[#8A99AD]">
+                    {status === "sent"
+                      ? "We'll review your project and reply within 24 hours with next steps."
+                      : "We opened a pre-filled email to our team. If nothing opened, write to us directly:"}
+                  </p>
+                  {status === "mailto" && (
+                    <a href={mailtoHref()} className="link-underline self-start text-[#3A9BD5] text-[16px]">
+                      {EMAIL}
+                    </a>
+                  )}
+                  <button type="button" onClick={reset} className="self-start text-[14px] text-[#A9B6C6] hover:text-white">
+                    ← Send another message
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={handleSubmit}
+                  noValidate
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {/* Honeypot (hidden from people) */}
                   <input
                     type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="John Doe"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: "clamp(20px, 2.5vw, 28px)",
-                      fontWeight: 500,
-                      color: "#E8EDF5",
-                      letterSpacing: "-0.02em",
-                      padding: 0,
-                      caretColor: "#3A9BD5",
-                    }}
+                    name="company_website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={hp}
+                    onChange={(e) => setHp(e.target.value)}
+                    className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                    aria-hidden
                   />
-                </div>
 
-                {/* Email */}
-                <div className="ct-right-item" style={{ borderBottom: "1px solid #1A2A38", paddingBottom: "32px", marginBottom: "32px" }}>
-                  <label
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "10px",
-                      letterSpacing: "0.2em",
-                      color: "#3A4A5A",
-                      display: "block",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    02 — YOUR EMAIL
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: "clamp(20px, 2.5vw, 28px)",
-                      fontWeight: 500,
-                      color: "#E8EDF5",
-                      letterSpacing: "-0.02em",
-                      padding: 0,
-                      caretColor: "#3A9BD5",
-                    }}
-                  />
-                </div>
+                  <Field n="01" label="What do you need?">
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {SERVICES.map((s) => (
+                        <Chip key={s} active={service === s} onClick={() => setService(service === s ? "" : s)}>
+                          {s}
+                        </Chip>
+                      ))}
+                    </div>
+                  </Field>
 
-                {/* Message */}
-                <div className="ct-right-item" style={{ borderBottom: "1px solid #1A2A38", paddingBottom: "32px", marginBottom: "48px" }}>
-                  <label
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "10px",
-                      letterSpacing: "0.2em",
-                      color: "#3A4A5A",
-                      display: "block",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    03 — TELL US ABOUT YOUR PROJECT
-                  </label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="I need a web app that..."
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: "clamp(18px, 2vw, 24px)",
-                      fontWeight: 500,
-                      color: "#E8EDF5",
-                      letterSpacing: "-0.02em",
-                      padding: 0,
-                      resize: "none",
-                      lineHeight: 1.5,
-                      caretColor: "#3A9BD5",
-                    }}
-                  />
-                </div>
+                  <div className="grid md:grid-cols-2 md:gap-8">
+                    <Field n="02" label="Your name">
+                      <input
+                        type="text"
+                        name="name"
+                        autoComplete="name"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="John Doe"
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field n="03" label="Your email">
+                      <input
+                        type="email"
+                        name="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@company.com"
+                        className={inputCls}
+                      />
+                    </Field>
+                  </div>
 
-                {/* Submit */}
-                <div className="ct-right-item">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "16px",
-                      background: "transparent",
-                      border: "1px solid rgba(139,175,200,0.3)",
-                      padding: "18px 40px",
-                      borderRadius: "6px",
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: "14px",
-                      fontWeight: 500,
-                      color: "#8BAFC8",
-                      cursor: loading ? "wait" : "pointer",
-                      transition: "all 0.3s ease",
-                      letterSpacing: "0.02em",
-                      opacity: loading ? 0.6 : 1,
-                    }}
-                    onMouseEnter={(e) => {
-                      if (loading) return;
-                      (e.currentTarget as HTMLButtonElement).style.borderColor = "#8BAFC8";
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(139,175,200,0.08)";
-                      (e.currentTarget as HTMLButtonElement).style.color = "#E8EDF5";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(139,175,200,0.3)";
-                      (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                      (e.currentTarget as HTMLButtonElement).style.color = "#8BAFC8";
-                    }}
-                  >
-                    {loading ? "Sending..." : "Send Message"}{" "}
-                    <span style={{ fontSize: "18px", transition: "transform 0.3s" }}>→</span>
-                  </button>
-                </div>
-              </form>
-            ) : (
-              /* ── Success state ── */
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "24px",
-                  padding: "60px 0",
-                }}
-              >
-                <div
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "50%",
-                    border: "1px solid #3A9BD5",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#3A9BD5",
-                    fontSize: "20px",
-                  }}
-                >
-                  ✓
-                </div>
-                <h3
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontWeight: 700,
-                    fontSize: "clamp(28px, 3vw, 40px)",
-                    color: "#E8EDF5",
-                    letterSpacing: "-0.03em",
-                    margin: 0,
-                  }}
-                >
-                  Message received.
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "15px",
-                    color: "#5A6880",
-                    margin: 0,
-                    lineHeight: 1.6,
-                  }}
-                >
-                  We'll review your project details and respond within 24 hours.
-                </p>
-                <button
-                  onClick={() => {
-                    setSent(false);
-                    setName("");
-                    setEmail("");
-                    setMessage("");
-                  }}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "14px",
-                    color: "#3A9BD5",
-                    cursor: "pointer",
-                    padding: 0,
-                    marginTop: "8px",
-                    textAlign: "left",
-                    transition: "color 0.2s",
-                  }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLButtonElement).style.color = "#E8EDF5")
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLButtonElement).style.color = "#3A9BD5")
-                  }
-                >
-                  ← Send another message
-                </button>
-              </div>
-            )}
+                  <Field n="04" label="Budget range">
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {BUDGETS.map((b) => (
+                        <Chip key={b} active={budget === b} onClick={() => setBudget(budget === b ? "" : b)}>
+                          {b}
+                        </Chip>
+                      ))}
+                    </div>
+                  </Field>
+
+                  <Field n="05" label="Tell us about your project">
+                    <textarea
+                      name="message"
+                      required
+                      rows={4}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="I need a web app that…"
+                      className={`${inputCls} !text-[clamp(18px,2vw,24px)] resize-none leading-[1.5]`}
+                    />
+                  </Field>
+
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      role="alert"
+                      className="mb-6 text-[14px] text-[#F08A8A]"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                    <button type="submit" disabled={status === "sending"} className="btn-primary disabled:opacity-60 disabled:cursor-wait">
+                      {status === "sending" ? (
+                        <>
+                          <span className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                          Sending…
+                        </>
+                      ) : (
+                        <>
+                          Send project brief <span className="btn-arrow">→</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="text-[13px] text-[#5A6880]">Takes 60 seconds. We reply within 24h.</span>
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
           </div>
         </div>
-
-
       </div>
-
-      {/* ── Placeholder styles ── */}
-      <style>{`
-        #contact input::placeholder,
-        #contact textarea::placeholder {
-          color: #3A4A5A;
-          font-family: 'Space Grotesk', sans-serif;
-          font-weight: 400;
-          letter-spacing: -0.02em;
-        }
-        #contact input:focus::placeholder,
-        #contact textarea:focus::placeholder {
-          color: #4A5A6A;
-        }
-        @media (max-width: 768px) {
-          #contact > div > div[style*="grid-template-columns"] {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }
