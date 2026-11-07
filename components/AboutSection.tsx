@@ -120,7 +120,7 @@ function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
               background: "rgba(58, 155, 213, 0.05)",
               border: "1px solid rgba(58, 155, 213, 0.15)",
               borderRadius: "12px",
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono-brand)",
               fontSize: "26px",
               color: "#3A9BD5",
               marginBottom: "28px",
@@ -132,7 +132,7 @@ function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
           </div>
           <h3
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: "clamp(20px, 2.5vw, 24px)",
               color: "#E8EDF5",
@@ -144,12 +144,11 @@ function PillarCard({ pillar }: { pillar: typeof pillars[0] }) {
           </h3>
           <p
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "var(--font-body)",
               fontSize: "clamp(14px, 1.5vw, 15px)",
-              color: "#8BAFC8",
+              color: "#9AA8BA",
               lineHeight: 1.7,
               margin: 0,
-              opacity: 0.8,
             }}
           >
             {pillar.desc}
@@ -264,7 +263,7 @@ export default function AboutSection() {
           position: "absolute",
           top: "48px",
           right: "64px",
-          fontFamily: "monospace",
+          fontFamily: "var(--font-mono-brand)",
           fontSize: "11px",
           letterSpacing: "0.18em",
           color: "#1B2A3A",
@@ -278,7 +277,7 @@ export default function AboutSection() {
         <span
           ref={labelRef}
           style={{
-            fontFamily: "monospace",
+            fontFamily: "var(--font-mono-brand)",
             fontSize: "11px",
             letterSpacing: "0.2em",
             color: "#3A9BD5",
@@ -287,7 +286,7 @@ export default function AboutSection() {
             marginBottom: "28px",
           }}
         >
-          03 / About
+          04 / About
         </span>
 
         <div
@@ -304,7 +303,7 @@ export default function AboutSection() {
           ref={headlineRef}
           data-text="LOCKRHYTHM: ARCHITECTING DIGITAL IMPACT."
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: "clamp(28px, 5.5vw, 72px)",
             letterSpacing: "-0.04em",
@@ -319,15 +318,15 @@ export default function AboutSection() {
         <p
           ref={bodyRef}
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-body)",
             fontSize: "clamp(16px, 1.6vw, 20px)",
-            color: "#5A6880",
+            color: "#8A99AD",
             lineHeight: 1.75,
             maxWidth: "680px",
             margin: "0 0 40px",
           }}
         >
-          We fuse brutalist engineering with cinematic UI/UX. We don't just build
+          We fuse brutalist engineering with cinematic UI/UX. We don&apos;t just build
           software; we engineer high-performance systems that define the modern
           web.{" "}
           <span style={{ color: "#8BAFC8" }}>

@@ -133,8 +133,9 @@ export default function StudioSection() {
     });
 
     // ── Header / footer fade in on mount ─────────────────────────────────────
+    let headerTween: gsap.core.Tween | undefined;
     if (headerRef.current) {
-      gsap.fromTo(headerRef.current,
+      headerTween = gsap.fromTo(headerRef.current,
         { opacity: 0, y: 24 },
         { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", scrollTrigger: {
           trigger: section, start: "top 80%",
@@ -149,7 +150,9 @@ export default function StudioSection() {
     // giving the "braiding" feel
     const PATH_STAGGER = [0, 0.08, 0.15, 0.22]; // how much each path lags behind
 
-    ScrollTrigger.create({
+    const owned: ScrollTrigger[] = [];
+    const rings = [...pulseRingRefs.current];
+    owned.push(ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: "bottom bottom",
@@ -219,12 +222,12 @@ export default function StudioSection() {
           }
         });
       },
-    });
+    }));
 
     // ── Footer counter — scroll progress counter ──────────────────────────────
     if (footerRef.current) {
       const counterEl = footerRef.current.querySelector<HTMLSpanElement>("[data-counter]");
-      ScrollTrigger.create({
+      owned.push(ScrollTrigger.create({
         trigger: section,
         start: "top top",
         end: "bottom bottom",
@@ -234,11 +237,14 @@ export default function StudioSection() {
             counterEl.textContent = `${Math.round(self.progress * 100).toString().padStart(3, "0")}`;
           }
         },
-      });
+      }));
     }
 
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      owned.forEach((t) => t.kill());
+      headerTween?.scrollTrigger?.kill();
+      headerTween?.kill();
+      rings.forEach((c) => c && gsap.killTweensOf(c));
     };
   }, []);
 
@@ -265,7 +271,7 @@ export default function StudioSection() {
       id="studio"
       style={{
         background: "#040408",
-        minHeight: "480vh",
+        minHeight: "360vh",
         position: "relative",
       }}
     >
@@ -318,7 +324,7 @@ export default function StudioSection() {
         >
           <p
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono-brand)",
               fontSize: "10px",
               letterSpacing: "0.25em",
               color: "#3A9BD5",
@@ -326,11 +332,11 @@ export default function StudioSection() {
               textTransform: "uppercase",
             }}
           >
-            How We Work
+            03 / Process
           </p>
           <h2
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 700,
               fontSize: "clamp(30px, 4.2vw, 58px)",
               color: "#E8EDF5",
@@ -339,9 +345,12 @@ export default function StudioSection() {
               margin: 0,
             }}
           >
-            The<br />
-            <span style={{ color: "#3A9BD5" }}>Pipeline.</span>
+            From idea<br />
+            <span className="text-gradient">to launch.</span>
           </h2>
+          <p className="hidden 2xl:block" style={{ marginTop: "16px", maxWidth: "260px", fontSize: "14px", lineHeight: 1.6, color: "#8A99AD" }}>
+            A clear, five-step pipeline. You always know what&apos;s happening and what&apos;s next.
+          </p>
         </div>
 
         {/* ── Progress counter (bottom-right) ── */}
@@ -360,7 +369,7 @@ export default function StudioSection() {
           <span
             data-counter
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono-brand)",
               fontSize: "clamp(32px, 4vw, 52px)",
               fontWeight: 700,
               color: "rgba(58,155,213,0.18)",
@@ -372,7 +381,7 @@ export default function StudioSection() {
           </span>
           <span
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono-brand)",
               fontSize: "10px",
               color: "rgba(90,104,128,0.5)",
               letterSpacing: "0.12em",
@@ -399,7 +408,7 @@ export default function StudioSection() {
         >
           <span
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono-brand)",
               fontSize: "8px",
               letterSpacing: "0.22em",
               color: "#5A6880",
@@ -421,11 +430,10 @@ export default function StudioSection() {
         <div
           style={{
             position: "relative",
-            width: "100%",
-            maxWidth: "960px",
-            height: "85vh",
-            margin: "0 auto",
-            padding: "0 clamp(16px, 3vw, 48px)",
+            // Lock the stage to the SVG's aspect ratio so % label positions line up with nodes.
+            width: "min(960px, calc(100% - 32px), calc((100vh - 190px) * 1.111))",
+            aspectRatio: "1000 / 900",
+            margin: "150px auto 0",
           }}
         >
           {/* ── Node Labels (HTML, positioned over SVG) ── */}
@@ -463,7 +471,7 @@ export default function StudioSection() {
               >
                 <p
                   style={{
-                    fontFamily: "monospace",
+                    fontFamily: "var(--font-mono-brand)",
                     fontSize: "9px",
                     letterSpacing: "0.22em",
                     color: "#3A9BD5",
@@ -476,7 +484,7 @@ export default function StudioSection() {
                 </p>
                 <p
                   style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "var(--font-display)",
                     fontWeight: 700,
                     fontSize: "clamp(12px, 1.4vw, 16px)",
                     color: "#E8EDF5",
@@ -489,9 +497,9 @@ export default function StudioSection() {
                 </p>
                 <p
                   style={{
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "var(--font-body)",
                     fontSize: "clamp(9px, 0.9vw, 11px)",
-                    color: "#4A5568",
+                    color: "#8A99AD",
                     lineHeight: 1.5,
                     margin: 0,
                   }}
