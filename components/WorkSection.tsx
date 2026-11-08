@@ -23,6 +23,66 @@ type Project = {
 
 const projects: Project[] = [
   {
+    id: 9,
+    name: "Eye Clinic 3D Story",
+    year: "2026",
+    tags: ["3D / WebGL", "Healthcare", "Concept"],
+    description:
+      "A concept site for an eye clinic in Sahiwal. Visitors turn a 3D eye, then scroll to see how cataract surgery works, step by step.",
+    href: "https://ahmadfaizan44.github.io/sahiwal-eye-care-concept/",
+    localImage: "/screenshots/eye-clinic.jpg",
+    color1: "#061840",
+    color2: "#1756d1",
+  },
+  {
+    id: 10,
+    name: "Dental Implant 3D Story",
+    year: "2026",
+    tags: ["3D / WebGL", "Healthcare", "Concept"],
+    description:
+      "A concept site for a dental clinic in Sahiwal: a 3D implant that comes apart as you scroll, then takes its place in a smile.",
+    href: "https://ahmadfaizan44.github.io/dr-ibrahim-dental-concept/",
+    localImage: "/screenshots/dental-implant.jpg",
+    color1: "#0e1f3d",
+    color2: "#c39b4a",
+  },
+  {
+    id: 11,
+    name: "Furniture Showroom Wheel",
+    year: "2026",
+    tags: ["Motion", "Retail", "Concept"],
+    description:
+      "A concept site for a furniture showroom in Sahiwal. Carved sofas and bridal beds turn on a giant wheel as you scroll or swipe.",
+    href: "https://ahmadfaizan44.github.io/ali-interior-concept/",
+    localImage: "/screenshots/furniture-wheel.jpg",
+    color1: "#2e1c12",
+    color2: "#b98a2e",
+  },
+  {
+    id: 12,
+    name: "Vet Clinic Wheel",
+    year: "2026",
+    tags: ["Motion", "Healthcare", "Concept"],
+    description:
+      "A concept site for a pet clinic in Sahiwal. Real patients turn on a wheel, each with its own WhatsApp question.",
+    href: "https://ahmadfaizan44.github.io/junaid-pets-clinic-concept/",
+    localImage: "/screenshots/vet-wheel.jpg",
+    color1: "#17232b",
+    color2: "#f3c53a",
+  },
+  {
+    id: 13,
+    name: "MS Jaguar EV Showroom",
+    year: "2026",
+    tags: ["Motion", "Automotive", "Concept"],
+    description:
+      "A redesign concept for an electric scooter brand: every scooter and e-bike rides a giant wheel as you scroll.",
+    href: "https://ahmadfaizan44.github.io/ms-jaguar-concept/",
+    localImage: "/screenshots/ms-jaguar.jpg",
+    color1: "#12264a",
+    color2: "#f0d6dc",
+  },
+  {
     id: 1,
     name: "Lumiere Studio Booking",
     year: "2025",
@@ -216,6 +276,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
     >
       <Link
         href={project.href}
+        prefetch={false}
         target="_blank"
         rel="noopener noreferrer"
         data-cursor="View live"
@@ -290,7 +351,7 @@ export default function WorkSection() {
           label="Work"
           title="Selected"
           accent="work."
-          intro="Real products we've designed, engineered and shipped — live and clickable. Every one started as a conversation like the one you could start today."
+          intro="Real products and concepts we've designed, engineered and shipped — live and clickable. Every one started as a conversation like the one you could start today."
           right={
             <span className="font-mono text-[12px] tracking-[0.18em] uppercase text-[#5A6880] md:pb-3">
               ({String(projects.length).padStart(2, "0")}) Projects
